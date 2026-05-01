@@ -1,0 +1,38 @@
+{
+  "appId":      "com.pulse.messenger",
+  "appName":    "Pulse",
+  "webDir":     "dist",
+  "bundledWebRuntime": false,
+  "server": {
+    "url":            "https://auragra-telegram-web.hf.space",
+    "cleartext":      false,
+    "allowNavigation": ["auragra-telegram-web.hf.space"]
+  },
+  "plugins": {
+    "SplashScreen": {
+      "launchShowDuration":  2000,
+      "backgroundColor":     "#050510",
+      "androidSplashResourceName": "splash",
+      "showSpinner":         false
+    },
+    "PushNotifications": {
+      "presentationOptions": ["badge", "sound", "alert"]
+    },
+    "LocalNotifications": {
+      "smallIcon":  "ic_stat_icon_config_sample",
+      "iconColor":  "#7C5CFC",
+      "sound":      "beep.wav"
+    },
+    "Microphone": {},
+    "Camera": {}
+  },
+  "android": {
+    "allowMixedContent":        true,
+    "webContentsDebuggingEnabled": false,
+    "backgroundColor":          "#050510"
+  },
+  "ios": {
+    "contentInset":             "always",
+    "backgroundColor":          "#050510"
+  }
+}

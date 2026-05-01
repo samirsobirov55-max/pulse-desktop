@@ -1,0 +1,67 @@
+{
+  "name": "pulse-messenger",
+  "version": "1.0.0",
+  "description": "Pulse Messenger — мессенджер нового поколения",
+  "author": { "name": "AuraGram", "email": "support@pulse.app" },
+  "license": "MIT",
+  "main": "electron/main.js",
+  "scripts": {
+    "start":       "electron .",
+    "build:client":"cd client && npm install && npm run build",
+    "build:win":   "npm run build:client && npx electron-builder --win",
+    "build:linux": "npm run build:client && npx electron-builder --linux",
+    "build:mac":   "npm run build:client && npx electron-builder --mac"
+  },
+  "build": {
+    "appId":       "com.auragra.pulse",
+    "productName": "Pulse",
+    "copyright":   "© 2025 AuraGram",
+    "directories": {
+      "output":          "dist-desktop",
+      "buildResources":  "electron/assets"
+    },
+    "files": [
+      "electron/**/*",
+      "client/dist/**/*",
+      "node_modules/**/*"
+    ],
+    "extraResources": [],
+    "asar": true,
+    "win": {
+      "target": [{ "target": "nsis", "arch": ["x64"] }],
+      "icon": "electron/assets/icon.ico",
+      "requestedExecutionLevel": "asInvoker"
+    },
+    "nsis": {
+      "oneClick":                        false,
+      "allowToChangeInstallationDirectory": true,
+      "createDesktopShortcut":           true,
+      "createStartMenuShortcut":         true,
+      "shortcutName":                    "Pulse",
+      "installerIcon":                   "electron/assets/icon.ico",
+      "uninstallerIcon":                 "electron/assets/icon.ico"
+    },
+    "linux": {
+      "target":   ["AppImage"],
+      "icon":     "electron/assets/icon.png",
+      "category": "Network",
+      "desktop": {
+        "Name":       "Pulse",
+        "Comment":    "Pulse Messenger",
+        "Categories": "Network;InstantMessaging;"
+      }
+    },
+    "mac": {
+      "target":   [{ "target": "dmg" }],
+      "icon":     "electron/assets/icon.icns",
+      "category": "public.app-category.social-networking"
+    }
+  },
+  "devDependencies": {
+    "electron":         "^28.3.3",
+    "electron-builder": "^24.13.3"
+  },
+  "dependencies": {
+    "electron-store": "^8.2.0"
+  }
+}

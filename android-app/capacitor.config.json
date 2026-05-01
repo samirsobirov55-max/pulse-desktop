@@ -1,0 +1,51 @@
+{
+  "appId": "com.auragra.pulse",
+  "appName": "Pulse",
+  "webDir": "../client/dist",
+  "backgroundColor": "#050510",
+  "plugins": {
+    "SplashScreen": {
+      "launchShowDuration": 1000,
+      "launchAutoHide": true,
+      "backgroundColor": "#050510",
+      "showSpinner": false
+    },
+    "StatusBar": {
+      "style": "Dark",
+      "backgroundColor": "#050510"
+    },
+    "PushNotifications": {
+      "presentationOptions": [
+        "badge",
+        "sound",
+        "alert"
+      ]
+    },
+    "LocalNotifications": {
+      "smallIcon": "ic_stat_icon_config_sample",
+      "iconColor": "#7C5CFC",
+      "sound": "notification"
+    },
+    "BackgroundRunner": {
+      "label": "com.auragra.pulse.background",
+      "src": "background.js",
+      "event": "syncData",
+      "repeat": true,
+      "interval": 15,
+      "autoStart": true
+    }
+  },
+  "server": {
+    "allowNavigation": [
+      "auragram-telegram-web.hf.space",
+      "*.hf.space"
+    ],
+    "cleartext": true,
+    "androidScheme": "https"
+  },
+  "android": {
+    "allowMixedContent": true,
+    "captureInput": true,
+    "webContentsDebuggingEnabled": false
+  }
+}

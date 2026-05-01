@@ -1,0 +1,121 @@
+name: Build Pulse Desktop & Android
+
+on:
+  push:
+    branches: [main]
+    tags: ['v*']
+  workflow_dispatch:
+
+jobs:
+  windows:
+    name: Windows EXE
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - name: Build client
+        working-directory: client
+        run: npm install && npm run build
+      - name: Build EXE
+        run: npm install && npx electron-builder --win --publish never
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - uses: actions/upload-artifact@v4
+        with:
+          name: Pulse-Windows
+          path: dist-desktop/Pulse*.exe
+          retention-days: 30
+
+  linux:
+    name: Linux AppImage
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - run: |
+          sudo apt-get update -y
+          sudo apt-get install -y libgtk-3-0 libnotify-dev libnss3 libxss1 libxtst6 \
+            xdg-utils libatspi2.0-0 libdrm2 libxcomposite1 libxdamage1 libxrandr2 \
+            libgbm1 libpango-1.0-0 libcairo2 rpm fakeroot
+      - name: Build client
+        working-directory: client
+        run: npm install && npm run build
+      - name: Build AppImage
+        run: npm install && npx electron-builder --linux AppImage --publish never
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - uses: actions/upload-artifact@v4
+        with:
+          name: Pulse-Linux
+          path: dist-desktop/Pulse*.AppImage
+          retention-days: 30
+
+  android:
+    name: Android APK
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - uses: actions/setup-java@v4
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+      - name: Setup Android SDK
+        uses: android-actions/setup-android@v3
+
+      - name: Build React client
+        working-directory: client
+        run: npm install && npm run build
+
+      - name: Setup Capacitor
+        working-directory: android-app
+        run: npm install && npx cap add android && npx cap sync android
+
+      - name: Patch Gradle and write sources
+        run: python3 android-app/patch_android.py
+
+      - name: Make gradlew executable
+        working-directory: android-app/android
+        run: chmod +x gradlew
+
+      - name: Build APK
+        working-directory: android-app/android
+        run: ./gradlew assembleDebug --no-daemon
+
+      - name: Copy APK
+        run: |
+          mkdir -p apk-out
+          find android-app/android -name "*.apk" -exec cp {} apk-out/Pulse.apk \;
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: Pulse-Android
+          path: apk-out/Pulse.apk
+          retention-days: 30
+
+  release:
+    name: GitHub Release
+    needs: [windows, linux, android]
+    runs-on: ubuntu-latest
+    if: startsWith(github.ref, 'refs/tags/v')
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          path: artifacts
+      - uses: softprops/action-gh-release@v2
+        with:
+          name: "Pulse ${{ github.ref_name }}"
+          files: |
+            artifacts/Pulse-Windows/*.exe
+            artifacts/Pulse-Linux/*.AppImage
+            artifacts/Pulse-Android/Pulse.apk
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

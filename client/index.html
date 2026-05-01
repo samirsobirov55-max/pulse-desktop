@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Pulse</title>
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+  <!-- Prevent black screen on cold restart before React mounts -->
+  <style>
+    html, body { background: #050510 !important; }
+    #root { min-height: 100vh; background: #050510; }
+    #pulse-splash {
+      position: fixed; inset: 0; z-index: 9999;
+      background: #050510;
+      display: flex; align-items: center; justify-content: center;
+      flex-direction: column; gap: 16px;
+      transition: opacity .35s ease;
+    }
+    #pulse-splash.fade-out { opacity: 0; pointer-events: none; }
+    #pulse-splash-ring {
+      width: 48px; height: 48px;
+      border: 3px solid rgba(124,92,252,0.3);
+      border-top-color: #7C5CFC;
+      border-radius: 50%;
+      animation: _spin .8s linear infinite;
+    }
+    @keyframes _spin { to { transform: rotate(360deg); } }
+    #pulse-splash-label { color: rgba(240,240,255,0.4); font-size: 0.9rem; font-family: sans-serif; }
+  </style>
+</head>
+<body>
+  <!-- Instant splash shown before JS bundle executes -->
+  <div id="pulse-splash">
+    <div id="pulse-splash-ring"></div>
+    <div id="pulse-splash-label">Загрузка Pulse...</div>
+  </div>
+  <div id="root"></div>
+  <script>
+    // Remove splash after first React paint
+    document.addEventListener('DOMContentLoaded', function() {
+      var splash = document.getElementById('pulse-splash');
+      if (!splash) return;
+      // Give React ~600ms to mount, then fade out splash
+      setTimeout(function() {
+        splash.classList.add('fade-out');
+        setTimeout(function() { splash.remove(); }, 400);
+      }, 600);
+    });
+  </script>
+  <script type="module" src="/src/main.jsx"></script>
+</body>
+</html>

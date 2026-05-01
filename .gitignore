@@ -1,0 +1,9 @@
+node_modules/
+dist-desktop/
+client/dist/
+client/node_modules/
+android-app/node_modules/
+android-app/android/
+*.log
+.DS_Store
+Thumbs.db
